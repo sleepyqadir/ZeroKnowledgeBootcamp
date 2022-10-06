@@ -10,3 +10,4 @@ func test_calculate_sum{syscall_ptr: felt*, range_check_ptr}() {
     assert 55 = r;
     return ();
 }
+
