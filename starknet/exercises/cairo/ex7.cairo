@@ -1,5 +1,3 @@
-// I AM NOT DONE
-
 %lang starknet
 from starkware.cairo.common.bitwise import bitwise_and, bitwise_xor
 from starkware.cairo.common.cairo_builtins import BitwiseBuiltin
@@ -16,5 +14,19 @@ from starkware.cairo.common.math import unsigned_div_rem
 func pattern{bitwise_ptr: BitwiseBuiltin*, range_check_ptr}(
     n: felt, idx: felt, exp: felt, broken_chain: felt
 ) -> (true: felt) {
-    return (0,);
+   alloc_locals;
+    let (local lsb) = bitwise_and(n,1);
+
+    if (lsb == exp) {
+        if (idx != 0) {
+            return (true=0);
+        }
+    }
+
+    if (n == 0) {
+        return (true=1);
+    } else {
+        return pattern((n - lsb)/2, idx + 1, lsb, 0);
+    }
+
 }
