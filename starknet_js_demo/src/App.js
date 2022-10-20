@@ -1,80 +1,78 @@
-import './App.css';
-import { useState, useEffect } from "react"
-import { connect } from "get-starknet"
-import { Contract } from "starknet"
-import { toBN } from "starknet/dist/utils/number"
+import "./App.css";
+import { useState, useEffect } from "react";
+import { connect } from "get-starknet";
+import { Contract } from "starknet";
+import { toBN } from "starknet/dist/utils/number";
 
-import contractAbi from "./contract_abi.json"
+import contractAbi from "./contract_abi.json";
 
-const contractAddress = "0x0704ed6b41f5d9dfdc5037c627d53ee52aef0675ed47ba59b57b8152c0144a9e"
-
+const contractAddress =
+  "0x04c2241e9d73926d20f2b3418d9da6717b4a7d304aae23d3a2d9539ede0d8f3e";
 
 function App() {
-  const [provider, setProvider] = useState('')
-  const [address, setAddress] = useState('')
-  const [retrievedBalance, setRetrievedBalance] = useState('')
-  const [isConnected, setIsConnected] = useState(false)
+  const [provider, setProvider] = useState("");
+  const [address, setAddress] = useState("");
+  const [price, setPrice] = useState("");
+  const [index, setIndex] = useState("");
+  const [transaction, setTransaction] = useState("");
+  const [seller, setSeller] = useState("");
+  const [buyer, setBuyer] = useState("");
+  const [discount, setDiscount] = useState("");
 
+  const [isConnected, setIsConnected] = useState(false);
 
-  const connectWallet = async() => {
-    try{
+  const connectWallet = async () => {
+    try {
       // connect the wallet
-      const starknet = await connect()
-      await starknet?.enable({ starknetVersion: "v4" })
+      const starknet = await connect();
+      await starknet?.enable({ starknetVersion: "v4" });
       // set up the provider
-      setProvider(starknet.account)
+      setProvider(starknet.account);
       // set wallet address
-     setAddress(starknet.selectedAddress)
+      setAddress(starknet.selectedAddress);
       // set connection flag
-      setIsConnected(true)
-      
+      setIsConnected(true);
+    } catch (error) {
+      alert(error.message);
     }
-    catch(error){
-      alert(error.message)
-    }
-  }
+  };
 
-  const increaseBalanceFunction = async() => {
-    try{
+  const submitSale = async () => {
+    try {
       // create a contract object based on the provider, address and abi
-      const contract = new Contract(contractAbi, contractAddress, provider)
-      
+      const contract = new Contract(contractAbi, contractAddress, provider);
+
+      console.log(contract);
+
       // call the increase_balance function
-      await contract.increase_balance(13)
-      
+      const response = await contract.submit_sale(
+        price,
+        index,
+        discount,
+        buyer,
+        seller,
+        transaction
+      );
+      alert(response === 1 ? "success" : "fail");
+    } catch (error) {
+      alert(error.message);
     }
-    catch(error){
-      alert(error.message)
-    }
-  }
+  };
 
-  const getBalanceFunction = async() => {
-    try{
-      // create a contract object based on the provider, address and abi
-      const contract = new Contract(contractAbi, contractAddress, provider)
-      // call the function
-      const _bal = await contract.get_balance()
-      // decode the result
-      const _decodedBalance = toBN(_bal.res, 16).toString()
-      // display the result
-      setRetrievedBalance(_decodedBalance)
-    }
-    catch(error){
-      alert(error.message)
-    }
-  }
   return (
     <div className="App">
       <header className="App-header">
         <main className="main">
-          <h1 className="title">
-            Minimal Starknet JS DEMO
-          </h1>
-          {
-            isConnected ?
-            <button className="connect">{address.slice(0, 5)}...{address.slice(60)}</button> :
-            <button className="connect" onClick={() => connectWallet()}>Connect wallet</button>
-          }
+          <h1 className="title">Minimal Starknet JS DEMO</h1>
+          {isConnected ? (
+            <button className="connect">
+              {address.slice(0, 5)}...{address.slice(60)}
+            </button>
+          ) : (
+            <button className="connect" onClick={() => connectWallet()}>
+              Connect wallet
+            </button>
+          )}
 
           <p className="description">
             Using Starknet JS with a simple contract
@@ -82,23 +80,64 @@ function App() {
 
           <div className="grid">
             <div href="#" className="card">
-              <h2>Use Alpha-goerli test net! &rarr;</h2>
-
-
-              <div className="cardForm">
-                {/* <input type="text" className="input" placeholder="Enter Name" onChange={(e) => setName(e.target.value)} /> */}
-
-                <input type="submit" className="button" value="Add ETH  " onClick={() => increaseBalanceFunction()} />
-              </div>
-
-              <hr />
-
               {/* <p>Insert a wallet address, to retrieve its name.</p> */}
+
+              <input
+                type="input"
+                className="input"
+                placeholder="Price"
+                onChange={(e) => {
+                  setPrice(e.target.value);
+                }}
+              />
+              <input
+                type="input"
+                className="input"
+                placeholder="Item Index"
+                onChange={(e) => {
+                  setIndex(e.target.value);
+                }}
+              />
+              <input
+                type="input"
+                className="input"
+                placeholder="Discount Applied"
+                onChange={(e) => {
+                  setDiscount(e.target.value);
+                }}
+              />
+              <input
+                type="input"
+                className="input"
+                placeholder="Buyer Name"
+                onChange={(e) => {
+                  setBuyer(e.target.value);
+                }}
+              />
+              <input
+                type="input"
+                className="input"
+                placeholder="Seller Name"
+                onChange={(e) => {
+                  setSeller(e.target.value);
+                }}
+              />
+              <input
+                type="input"
+                className="input"
+                placeholder="Transaction Id"
+                onChange={(e) => {
+                  setTransaction(e.target.value);
+                }}
+              />
               <div className="cardForm">
-               
-                <input type="submit" className="button" value="Get Balance " onClick={() => getBalanceFunction()} />
+                <input
+                  type="submit"
+                  className="button"
+                  value="Get Balance "
+                  onClick={() => submitSale()}
+                />
               </div>
-              <p>Balance: {retrievedBalance} ETH</p>
             </div>
           </div>
         </main>

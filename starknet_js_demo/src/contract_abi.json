@@ -2,30 +2,38 @@
     {
         "inputs": [
             {
-                "name": "amount",
+                "name": "price",
+                "type": "felt"
+            },
+            {
+                "name": "item_index",
+                "type": "felt"
+            },
+            {
+                "name": "discount_applied",
+                "type": "felt"
+            },
+            {
+                "name": "buyer",
+                "type": "felt"
+            },
+            {
+                "name": "seller",
+                "type": "felt"
+            },
+            {
+                "name": "transaction",
                 "type": "felt"
             }
         ],
-        "name": "increase_balance",
-        "outputs": [],
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "get_balance",
+        "name": "submit_sale",
         "outputs": [
             {
-                "name": "res",
+                "name": "success",
                 "type": "felt"
             }
         ],
         "stateMutability": "view",
         "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "constructor",
-        "outputs": [],
-        "type": "constructor"
     }
 ]
